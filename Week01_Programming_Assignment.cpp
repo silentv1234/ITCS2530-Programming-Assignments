@@ -1,18 +1,22 @@
 #include <iostream>
+#include <iomanip>
+#include <fstream>
 #include <string>
-
 using namespace std;
 
 int main()
-// Week 01 programming assignment
 {
-    // Declare variables to store the user's answers
     string favoriteTopic;
     string historicalFigure;
     int hoursPerWeek;
+    double bookCost;
     int hoursPerMonth;
+    double yearlyBookCost;
 
-    // Ask the user for three pieces of information
+    cout << "========================================" << endl;
+    cout << "   Orthodox Christian History Tracker" << endl;
+    cout << "========================================" << endl;
+
     cout << "What topic in Orthodox Christian history interests you most? ";
     getline(cin, favoriteTopic);
 
@@ -22,19 +26,40 @@ int main()
     cout << "How many hours per week do you study this topic? ";
     cin >> hoursPerWeek;
 
-    // Calculate monthly study time
+    cout << "How much do you spend on books/resources each month? ";
+    cin >> bookCost;
+
+    if (hoursPerWeek < 0 || bookCost < 0)
+    {
+        cout << "Invalid input. Hours and cost cannot be negative." << endl;
+        return 1;
+    }
+
     hoursPerMonth = hoursPerWeek * 4;
+    yearlyBookCost = bookCost * 12;
 
-    // Display a paragraph using the user's information
+    cout << fixed << showpoint << setprecision(2);
     cout << endl;
+    cout << left << setw(25) << "Topic:" << favoriteTopic << endl;
+    cout << left << setw(25) << "Figure:" << historicalFigure << endl;
+    cout << left << setw(25) << "Hours per week:" << hoursPerWeek << endl;
+    cout << left << setw(25) << "Hours per month:" << hoursPerMonth << endl;
+    cout << left << setw(25) << "Yearly resource cost:" << "$" << yearlyBookCost << endl;
 
-    cout << "You enjoy studying " << favoriteTopic
-        << " in Orthodox Christian history, especially learning about "
-        << historicalFigure << ". If you study for "
-        << hoursPerWeek << " hours each week, that means you study about "
-        << hoursPerMonth << " hours each month. That is a great way to grow "
-        << "in knowledge of Church history while also practicing research and discipline."
-        << endl;
+    ofstream reportFile;
+    reportFile.open("report.txt");
+
+    reportFile << fixed << showpoint << setprecision(2);
+    reportFile << "Orthodox Christian History Tracker Report" << endl;
+    reportFile << "Topic: " << favoriteTopic << endl;
+    reportFile << "Figure: " << historicalFigure << endl;
+    reportFile << "Hours per week: " << hoursPerWeek << endl;
+    reportFile << "Hours per month: " << hoursPerMonth << endl;
+    reportFile << "Yearly resource cost: $" << yearlyBookCost << endl;
+
+    reportFile.close();
+
+    cout << endl << "Report saved to report.txt." << endl;
 
     return 0;
 }
