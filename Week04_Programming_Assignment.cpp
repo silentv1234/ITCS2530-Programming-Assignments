@@ -2,7 +2,16 @@
 #include <iomanip>
 #include <fstream>
 #include <string>
+#include <windows.h>
 using namespace std;
+
+// Function prototypes
+void changeConsoleTextColor();
+void displayIntroductionBanner();
+void collectAndValidateUserInput(string& favoriteTopic, string& historicalFigure, int& hoursPerWeek, double& monthlyBookCost);
+void calculateMonthlyAndYearlyTotals(int hoursPerWeek, double monthlyBookCost, int& hoursPerMonth, double& yearlyBookCost);
+void displayMenuOptions();
+void saveFormattedReportToFile(string favoriteTopic, string historicalFigure, int hoursPerWeek, int hoursPerMonth, double monthlyBookCost, double yearlyBookCost);
 
 int main()
 {
@@ -14,53 +23,21 @@ int main()
     int hoursPerMonth;
     double yearlyBookCost;
     char runAgain;
-
-    // Variables used in the for loop summary
     int studyWeek;
 
-    cout << "========================================" << endl;
-    cout << "   Orthodox Christian History Tracker" << endl;
-    cout << "========================================" << endl;
-    cout << "This program helps track study time and book/resource spending." << endl << endl;
+    changeConsoleTextColor();
+    displayIntroductionBanner();
 
-    cout << "What topic in Orthodox Christian history interests you most? ";
-    getline(cin, favoriteTopic);
+    collectAndValidateUserInput(favoriteTopic, historicalFigure, hoursPerWeek, monthlyBookCost);
 
-    cout << "What saint, council, or historical figure do you like learning about? ";
-    getline(cin, historicalFigure);
-
-    cout << "How many hours per week do you study this topic? ";
-    cin >> hoursPerWeek;
-
-    cout << "How much do you spend on books/resources each month? ";
-    cin >> monthlyBookCost;
-
-    if (hoursPerWeek < 0)
-    {
-        cout << "Invalid input. Study hours cannot be negative." << endl;
-        return 1;
-    }
-
-    if (monthlyBookCost < 0)
-    {
-        cout << "Invalid input. Monthly book cost cannot be negative." << endl;
-        return 1;
-    }
-
-    hoursPerMonth = hoursPerWeek * 4;
-    yearlyBookCost = monthlyBookCost * 12;
+    calculateMonthlyAndYearlyTotals(hoursPerWeek, monthlyBookCost, hoursPerMonth, yearlyBookCost);
 
     cout << fixed << showpoint << setprecision(2);
 
     // This do-while loop lets the user view more than one menu option
     do
     {
-        cout << endl;
-        cout << "Choose an option:" << endl;
-        cout << "1. View study report" << endl;
-        cout << "2. View spending report" << endl;
-        cout << "3. View recommendation" << endl;
-        cout << "Enter your choice: ";
+        displayMenuOptions();
         cin >> menuChoice;
 
         // This while loop checks that the user entered a valid menu choice
@@ -123,7 +100,79 @@ int main()
 
     } while (runAgain == 'y' || runAgain == 'Y');
 
-    // Create and save a report file
+    saveFormattedReportToFile(favoriteTopic, historicalFigure, hoursPerWeek, hoursPerMonth, monthlyBookCost, yearlyBookCost);
+
+    cout << endl;
+    cout << "Report saved to report.txt." << endl;
+
+    return 0;
+}
+
+// Change the console text color to purple
+void changeConsoleTextColor()
+{
+    HANDLE consoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(consoleColor, 13);
+}
+
+// Display the program introduction banner
+void displayIntroductionBanner()
+{
+    cout << "========================================" << endl;
+    cout << "   Orthodox Christian History Tracker" << endl;
+    cout << "========================================" << endl;
+    cout << "This program helps track study time and book/resource spending." << endl << endl;
+}
+
+// Collect user input and validate the number values
+void collectAndValidateUserInput(string& favoriteTopic, string& historicalFigure, int& hoursPerWeek, double& monthlyBookCost)
+{
+    cout << "What topic in Orthodox Christian history interests you most? ";
+    getline(cin, favoriteTopic);
+
+    cout << "What saint, council, or historical figure do you like learning about? ";
+    getline(cin, historicalFigure);
+
+    cout << "How many hours per week do you study this topic? ";
+    cin >> hoursPerWeek;
+
+    while (hoursPerWeek < 0)
+    {
+        cout << "Invalid input. Study hours cannot be negative. Enter again: ";
+        cin >> hoursPerWeek;
+    }
+
+    cout << "How much do you spend on books/resources each month? ";
+    cin >> monthlyBookCost;
+
+    while (monthlyBookCost < 0)
+    {
+        cout << "Invalid input. Monthly book cost cannot be negative. Enter again: ";
+        cin >> monthlyBookCost;
+    }
+}
+
+// Calculate the monthly study hours and yearly book/resource cost
+void calculateMonthlyAndYearlyTotals(int hoursPerWeek, double monthlyBookCost, int& hoursPerMonth, double& yearlyBookCost)
+{
+    hoursPerMonth = hoursPerWeek * 4;
+    yearlyBookCost = monthlyBookCost * 12;
+}
+
+// Display the menu choices for the user
+void displayMenuOptions()
+{
+    cout << endl;
+    cout << "Choose an option:" << endl;
+    cout << "1. View study report" << endl;
+    cout << "2. View spending report" << endl;
+    cout << "3. View recommendation" << endl;
+    cout << "Enter your choice: ";
+}
+
+// Save the formatted report to a text file
+void saveFormattedReportToFile(string favoriteTopic, string historicalFigure, int hoursPerWeek, int hoursPerMonth, double monthlyBookCost, double yearlyBookCost)
+{
     ofstream reportFile;
     reportFile.open("report.txt");
 
@@ -147,9 +196,4 @@ int main()
     }
 
     reportFile.close();
-
-    cout << endl;
-    cout << "Report saved to report.txt." << endl;
-
-    return 0;
 }
