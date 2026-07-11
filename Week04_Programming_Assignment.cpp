@@ -1,5 +1,5 @@
-// Week 06: Programming Assignment
-// Added arrays and enum features
+// Week 07: Programming Assignment
+// Added structures features
 
 
 #include <iostream>
@@ -8,17 +8,42 @@
 #include <string>
 using namespace std;
 
+
+struct Day
+{
+    int studyHours = 0;
+};
+
+struct totalWeeklyStudyHours
+{
+    Day studyPerDay[7];
+};
+
+
+struct month
+{
+    double cost = 0;
+};
+
+struct totalYearlyCost
+{
+    month costPerMonth[12];
+};
+
+
 // Function prototypes
 void changeConsoleTextColor();
 void displayIntroductionBanner();
 void FirstTwoIntro_Questions(string& favoriteTopic, string& historicalFigure);
-int CalculateWeeklyStudy(int Array_hoursPerWeek[], int hoursPerWeek_size);
-double MonthlyAndYearlyCost(double Array_yearlyBookCost[], int monthsInYear);
+int CalculateWeeklyStudy(totalWeeklyStudyHours& TWH_total);
+double MonthlyAndYearlyCost(totalYearlyCost& TYC_total);
 int calculateMonthlyHours(int totalWeeklyHours);
 double calculateWeeklyAverageHours(int hoursPerMonth);
 double calculateMonthlyAverageCost(double totalYearlyBookCost);
 void displayMenuOptions(int menuOptions[], int menuSize);
 void saveFormattedReportToFile(string favoriteTopic, string historicalFigure, double averageHoursWeekly, int hoursPerMonth, double averageMonthlyCost, double totalYearlyBookCost);
+
+
 
 int main()
 {
@@ -33,7 +58,7 @@ int main()
     double totalYearlyBookCost;
     char runAgain;
     int studyWeek;
-
+    
 
     // Define an enumeration for menu options
     enum menuOptions_names { VIEW_STUDY_REPORT = 1, VIEW_SPENDING_REPORT = 2, VIEW_RECOMMENDATION = 3, CHOICE_CONFIRMATION = 4}; 
@@ -42,11 +67,8 @@ int main()
     const int menuSize = 4;                                                                                          // Define the size of the menu options
     int menuOptions[menuSize] = {VIEW_STUDY_REPORT, VIEW_SPENDING_REPORT, VIEW_RECOMMENDATION, CHOICE_CONFIRMATION}; // Declare an array to store menu options
 
-    const int hoursPerWeek_size = 7;                  // Define the size of the array for hours per week (7 days)
-    int Array_hoursPerWeek[hoursPerWeek_size] = {0};  // Declare the array to store hours per week for each day
-
-    const int monthsInYear = 12;                      // Define the number of months in a year
-    double Array_yearlyBookCost[monthsInYear]= {0};   // Declare an array to store yearly book costs for each month
+    totalWeeklyStudyHours weeklyStudyHourse;
+    totalYearlyCost yearlyCost;
 
     cout << fixed << showpoint << setprecision(2);
 
@@ -54,12 +76,10 @@ int main()
     changeConsoleTextColor();
     displayIntroductionBanner();
     FirstTwoIntro_Questions(favoriteTopic, historicalFigure);
-    // ARRAY 
-    totalWeeklyHours = CalculateWeeklyStudy(Array_hoursPerWeek, hoursPerWeek_size); // Store total weekly hours using  ARRAY 
+    totalWeeklyHours = CalculateWeeklyStudy(weeklyStudyHourse);                     // ARRAY // Store total weekly hours using  ARRAY 
     hoursPerMonth = calculateMonthlyHours(totalWeeklyHours);                        // Store calculated monthly study hours
     averageHoursWeekly = calculateWeeklyAverageHours(hoursPerMonth);                // Store calculated average weekly hours
-    // ARRAY 
-    totalYearlyBookCost = MonthlyAndYearlyCost(Array_yearlyBookCost, monthsInYear); // Store total yearly cost using ARRAY
+    totalYearlyBookCost = MonthlyAndYearlyCost(yearlyCost);                         // ARRAY  // Store total yearly cost using ARRAY
     averageMonthlyCost = calculateMonthlyAverageCost(totalYearlyBookCost);          // Store calculated average monthly cost
 
 
@@ -185,30 +205,37 @@ void FirstTwoIntro_Questions(string& favoriteTopic, string& historicalFigure)
 }
 
 
-// Function (return int): Use array to collect input and calculate total weekly hours
-int CalculateWeeklyStudy(int Array_hoursPerWeek[], int hoursPerWeek_size)
+// Function (return int): Use STRUCT and ARRAY to collect input and calculate total weekly hours
+int CalculateWeeklyStudy(totalWeeklyStudyHours& TWH_total)
 {
-
-    // cout << "How many hours per week do you study this topic? ";
-    // cin >> hoursPerWeek;
-
     int HoursPerDay = 24;
     int Min_ValidHours = 0;
-    int totalWeeklyHours = 0;                                                                              // Initialize a variable to keep track of the total weekly study hours
-    cout << "How many hours do you study this topic each day of the week (Sunday to Saturday)?" << endl;   // Prompt the user to enter study hours for each day of the week
-    for (int i = 0; i < hoursPerWeek_size; i++)                                                            // Loop through each day of the week to collect study hours (For loop)
+    int totalWeeklyHours = 0;
+    int daysInWeek = 7;
+
+    cout << "How many hours do you study this topic each day of the week (Sunday to Saturday)?" << endl;
+
+    for (int i = 0; i < daysInWeek; i++)
     {
-        cout << "Day " << (i + 1) << ": ";                  
-        cin >> Array_hoursPerWeek[i];                                                              // Store the input in the corresponding index of the array
-        while (Array_hoursPerWeek[i] < Min_ValidHours || Array_hoursPerWeek[i] > HoursPerDay || cin.fail())     // Validate that the input is not negative and is a valid integer (While loop)
+        cout << "Day " << (i + 1) << ": ";
+        cin >> TWH_total.studyPerDay[i].studyHours;
+
+        while (cin.fail() ||
+               TWH_total.studyPerDay[i].studyHours < Min_ValidHours ||
+               TWH_total.studyPerDay[i].studyHours > HoursPerDay)
         {
             cin.clear();
             cin.ignore(1000, '\n');
-            cout << "Invalid input! Study hours cannot be negative or exceed 24. \nEnter again for Day " << (i + 1) << ": ";
-            cin >> Array_hoursPerWeek[i];
+
+            cout << "Invalid input! Study hours cannot be negative or exceed 24."
+                 << "\nEnter again for Day " << (i + 1) << ": ";
+
+            cin >> TWH_total.studyPerDay[i].studyHours;
         }
-        totalWeeklyHours += Array_hoursPerWeek[i];          // Add the study hours for the current day to the total weekly hours
+
+        totalWeeklyHours += TWH_total.studyPerDay[i].studyHours;
     }
+
     cout << "Total study hours for the week: " << totalWeeklyHours << endl;
     cout << endl;
 
@@ -216,30 +243,43 @@ int CalculateWeeklyStudy(int Array_hoursPerWeek[], int hoursPerWeek_size)
 }
 
 
-// Function (return double): Use array to collect input and calculate total yearly cost
-double MonthlyAndYearlyCost(double Array_yearlyBookCost[], int monthsInYear)
+// Function (return double): Use STRUCT and ARRAY to collect input and calculate total yearly cost
+double MonthlyAndYearlyCost(totalYearlyCost& TYC_total)
 {
-    int Min_ValidNumber = 0;
-    double totalYearlyBookCost = 0;                                                      // Initialize a variable to keep track of the total monthly book/resource cost
-    cout << "Enter the monthly book/resource cost for each month of the year: " << endl; // Prompt the user to enter monthly book/resource costs for each month of the year
-    for (int i = 0; i < monthsInYear; i++)                                               // Loop through each month of the year
+    double Min_ValidNumber = 0;
+    double totalYearlyBookCost = 0;
+    int monthsInYear = 12;
+
+    cout << "Enter the monthly book/resource cost for each month of the year:" << endl;
+
+    for (int i = 0; i < monthsInYear; i++)
     {
         cout << "Month " << (i + 1) << ": $";
-        cin >> Array_yearlyBookCost[i];                                 // Store the input in the corresponding index of the array
-        while (Array_yearlyBookCost[i] < Min_ValidNumber || cin.fail()) // Validate that the input is not negative and is a valid number
+        cin >> TYC_total.costPerMonth[i].cost;
+
+        while (cin.fail() ||
+               TYC_total.costPerMonth[i].cost < Min_ValidNumber)
         {
             cin.clear();
             cin.ignore(1000, '\n');
-            cout << "Invalid input. Monthly book/resource cost cannot be negative. \nEnter again for Month " << (i + 1) << ": $";
-            cin >> Array_yearlyBookCost[i];
+
+            cout << "Invalid input. Monthly book/resource cost cannot be negative."
+                 << "\nEnter again for Month " << (i + 1) << ": $";
+
+            cin >> TYC_total.costPerMonth[i].cost;
         }
-        totalYearlyBookCost += Array_yearlyBookCost[i];         // Add the monthly book/resource cost for the current month to the total monthly book/resource cost
+
+        totalYearlyBookCost += TYC_total.costPerMonth[i].cost;
     }
-    cout << "Total book/resource cost for the year: $" << totalYearlyBookCost << endl;
+
+    cout << "Total book/resource cost for the year: $"
+         << totalYearlyBookCost << endl;
+
     cout << endl;
 
     return totalYearlyBookCost;
 }
+
 
 
 // Function (return int): Calculate monthly study hours 
@@ -320,7 +360,7 @@ void saveFormattedReportToFile(string favoriteTopic, string historicalFigure, do
     }
     else
     {
-        reportFile << "Study level: Light or moderate weekly study" << endl;
+        reportFile << left << setw(35) << "Study level: Light or moderate weekly study" << endl;
     }
 
     cout << endl;
