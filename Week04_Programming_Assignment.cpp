@@ -1,5 +1,5 @@
-// Week 07: Programming Assignment
-// Added structures features
+// Week 08: Programming Assignment
+// Added class features
 
 
 #include <iostream>
@@ -9,44 +9,79 @@
 using namespace std;
 
 
-struct Day
+class OrthodoxHistoryTracker
 {
-    int studyHours = 0;
-};
+public:
 
-struct totalWeeklyStudyHours
-{
-    Day studyPerDay[7];
-};
+    struct Day
+    {
+        int studyHours = 0;
+    };
 
-
-struct month
-{
-    double cost = 0;
-};
-
-struct totalYearlyCost
-{
-    month costPerMonth[12];
-};
+    struct totalWeeklyStudyHours
+    {
+        Day studyPerDay[7];
+    };
 
 
-// Function prototypes
-void changeConsoleTextColor();
-void displayIntroductionBanner();
-void FirstTwoIntro_Questions(string& favoriteTopic, string& historicalFigure);
-int CalculateWeeklyStudy(totalWeeklyStudyHours& TWH_total);
-double MonthlyAndYearlyCost(totalYearlyCost& TYC_total);
-int calculateMonthlyHours(int totalWeeklyHours);
-double calculateWeeklyAverageHours(int hoursPerMonth);
-double calculateMonthlyAverageCost(double totalYearlyBookCost);
-void displayMenuOptions(int menuOptions[], int menuSize);
-void saveFormattedReportToFile(string favoriteTopic, string historicalFigure, double averageHoursWeekly, int hoursPerMonth, double averageMonthlyCost, double totalYearlyBookCost);
+    struct month
+    {
+        double cost = 0;
+    };
+
+    struct totalYearlyCost
+    {
+        month costPerMonth[12];
+    };
 
 
+    // Define an enumeration for menu options
+    enum menuOptions_names
+    {
+        VIEW_STUDY_REPORT = 1,
+        VIEW_SPENDING_REPORT = 2,
+        VIEW_RECOMMENDATION = 3,
+        CHOICE_CONFIRMATION = 4
+    };
 
-int main()
-{
+
+    // Constructor
+    OrthodoxHistoryTracker()
+    {
+        favoriteTopic = "";
+        historicalFigure = "";
+        totalWeeklyHours = 0;
+        averageMonthlyCost = 0.0;
+        menuChoice = 0;
+        hoursPerMonth = 0;
+        averageHoursWeekly = 0.0;
+        totalYearlyBookCost = 0.0;
+        runAgain = ' ';
+        studyWeek = 0;
+
+        menuOptions[0] = VIEW_STUDY_REPORT;
+        menuOptions[1] = VIEW_SPENDING_REPORT;
+        menuOptions[2] = VIEW_RECOMMENDATION;
+        menuOptions[3] = CHOICE_CONFIRMATION;
+    }
+
+
+    // Function prototypes
+    void changeConsoleTextColor();
+    void displayIntroductionBanner();
+    void FirstTwoIntro_Questions();
+    int CalculateWeeklyStudy();
+    double MonthlyAndYearlyCost();
+    int calculateMonthlyHours();
+    double calculateWeeklyAverageHours();
+    double calculateMonthlyAverageCost();
+    void displayMenuOptions();
+    void saveFormattedReportToFile();
+    void runProgram();
+
+
+private:
+
     // Declare variables
     string favoriteTopic;
     string historicalFigure;
@@ -58,38 +93,57 @@ int main()
     double totalYearlyBookCost;
     char runAgain;
     int studyWeek;
-    
 
-    // Define an enumeration for menu options
-    enum menuOptions_names { VIEW_STUDY_REPORT = 1, VIEW_SPENDING_REPORT = 2, VIEW_RECOMMENDATION = 3, CHOICE_CONFIRMATION = 4}; 
 
-    //Arrays
-    const int menuSize = 4;                                                                                          // Define the size of the menu options
-    int menuOptions[menuSize] = {VIEW_STUDY_REPORT, VIEW_SPENDING_REPORT, VIEW_RECOMMENDATION, CHOICE_CONFIRMATION}; // Declare an array to store menu options
+    // Arrays
+    static const int menuSize = 4;
+    int menuOptions[menuSize];
 
     totalWeeklyStudyHours weeklyStudyHourse;
     totalYearlyCost yearlyCost;
+};
 
+
+
+int main()
+{
+    // Create class object
+    OrthodoxHistoryTracker tracker;
+
+    // Run program
+    tracker.runProgram();
+
+    return 0;
+}
+
+
+
+// Function definitions
+
+
+// Run the program
+void OrthodoxHistoryTracker::runProgram()
+{
     cout << fixed << showpoint << setprecision(2);
 
     // Call functions
     changeConsoleTextColor();
     displayIntroductionBanner();
-    FirstTwoIntro_Questions(favoriteTopic, historicalFigure);
-    totalWeeklyHours = CalculateWeeklyStudy(weeklyStudyHourse);                     // ARRAY // Store total weekly hours using  ARRAY 
-    hoursPerMonth = calculateMonthlyHours(totalWeeklyHours);                        // Store calculated monthly study hours
-    averageHoursWeekly = calculateWeeklyAverageHours(hoursPerMonth);                // Store calculated average weekly hours
-    totalYearlyBookCost = MonthlyAndYearlyCost(yearlyCost);                         // ARRAY  // Store total yearly cost using ARRAY
-    averageMonthlyCost = calculateMonthlyAverageCost(totalYearlyBookCost);          // Store calculated average monthly cost
+    FirstTwoIntro_Questions();
+    totalWeeklyHours = CalculateWeeklyStudy();                     // ARRAY // Store total weekly hours using ARRAY
+    hoursPerMonth = calculateMonthlyHours();                       // Store calculated monthly study hours
+    averageHoursWeekly = calculateWeeklyAverageHours();            // Store calculated average weekly hours
+    totalYearlyBookCost = MonthlyAndYearlyCost();                  // ARRAY // Store total yearly cost using ARRAY
+    averageMonthlyCost = calculateMonthlyAverageCost();            // Store calculated average monthly cost
 
 
 
     // This do-while loop lets the user view more than one menu option
     do
     {
-        // ARRAY 
+        // ARRAY
         // Display menu options using the menu array
-        displayMenuOptions(menuOptions, menuSize);     
+        displayMenuOptions();
         cin >> menuChoice;
 
         // This while loop checks that the user entered a valid menu choice
@@ -154,40 +208,37 @@ int main()
         cin >> runAgain;
 
     } while (runAgain != 'q' && runAgain != 'Q');
+
     cout << endl;
 
-    saveFormattedReportToFile(favoriteTopic, historicalFigure, averageHoursWeekly, hoursPerMonth, averageMonthlyCost, totalYearlyBookCost);
-
-    return 0;
+    saveFormattedReportToFile();
 }
 
 
 
-// Function definitions
-
-
 // Change the console text color to purple
-void changeConsoleTextColor()
+void OrthodoxHistoryTracker::changeConsoleTextColor()
 {
     cout << "\033[35m";
 }
 
 
 // Display the program introduction banner
-void displayIntroductionBanner()
+void OrthodoxHistoryTracker::displayIntroductionBanner()
 {
     cout << "================================================================" << endl;
     cout << "             Orthodox Christian History Tracker                 " << endl;
-    cout << "================================================================"  << endl;
+    cout << "================================================================" << endl;
     cout << " This program helps track study time and book/resource spending " << endl << endl;
 }
 
 
 // Function (Void): Display fist two question, take user input
-void FirstTwoIntro_Questions(string& favoriteTopic, string& historicalFigure)
+void OrthodoxHistoryTracker::FirstTwoIntro_Questions()
 {
     cout << "What topic in Orthodox Christian history interests you most? ";
     getline(cin, favoriteTopic);
+
     while (favoriteTopic == "")     // Check if topic input is empty
     {
         cout << "Invalid input! \n\nWhat topic in Orthodox Christian history interests you most? ";
@@ -196,17 +247,19 @@ void FirstTwoIntro_Questions(string& favoriteTopic, string& historicalFigure)
 
     cout << "What saint, council, or historical figure do you like learning about? ";
     getline(cin, historicalFigure);
+
     while (historicalFigure == "")  // Check if historical figure input is empty
     {
         cout << "Invalid input! \n\nWhat saint, council, or historical figure do you like learning about? ";
         getline(cin, historicalFigure);
     }
+
     cout << endl;
 }
 
 
 // Function (return int): Use STRUCT and ARRAY to collect input and calculate total weekly hours
-int CalculateWeeklyStudy(totalWeeklyStudyHours& TWH_total)
+int OrthodoxHistoryTracker::CalculateWeeklyStudy()
 {
     int HoursPerDay = 24;
     int Min_ValidHours = 0;
@@ -218,11 +271,11 @@ int CalculateWeeklyStudy(totalWeeklyStudyHours& TWH_total)
     for (int i = 0; i < daysInWeek; i++)
     {
         cout << "Day " << (i + 1) << ": ";
-        cin >> TWH_total.studyPerDay[i].studyHours;
+        cin >> weeklyStudyHourse.studyPerDay[i].studyHours;
 
         while (cin.fail() ||
-               TWH_total.studyPerDay[i].studyHours < Min_ValidHours ||
-               TWH_total.studyPerDay[i].studyHours > HoursPerDay)
+               weeklyStudyHourse.studyPerDay[i].studyHours < Min_ValidHours ||
+               weeklyStudyHourse.studyPerDay[i].studyHours > HoursPerDay)
         {
             cin.clear();
             cin.ignore(1000, '\n');
@@ -230,10 +283,10 @@ int CalculateWeeklyStudy(totalWeeklyStudyHours& TWH_total)
             cout << "Invalid input! Study hours cannot be negative or exceed 24."
                  << "\nEnter again for Day " << (i + 1) << ": ";
 
-            cin >> TWH_total.studyPerDay[i].studyHours;
+            cin >> weeklyStudyHourse.studyPerDay[i].studyHours;
         }
 
-        totalWeeklyHours += TWH_total.studyPerDay[i].studyHours;
+        totalWeeklyHours += weeklyStudyHourse.studyPerDay[i].studyHours;
     }
 
     cout << "Total study hours for the week: " << totalWeeklyHours << endl;
@@ -244,7 +297,7 @@ int CalculateWeeklyStudy(totalWeeklyStudyHours& TWH_total)
 
 
 // Function (return double): Use STRUCT and ARRAY to collect input and calculate total yearly cost
-double MonthlyAndYearlyCost(totalYearlyCost& TYC_total)
+double OrthodoxHistoryTracker::MonthlyAndYearlyCost()
 {
     double Min_ValidNumber = 0;
     double totalYearlyBookCost = 0;
@@ -255,10 +308,10 @@ double MonthlyAndYearlyCost(totalYearlyCost& TYC_total)
     for (int i = 0; i < monthsInYear; i++)
     {
         cout << "Month " << (i + 1) << ": $";
-        cin >> TYC_total.costPerMonth[i].cost;
+        cin >> yearlyCost.costPerMonth[i].cost;
 
         while (cin.fail() ||
-               TYC_total.costPerMonth[i].cost < Min_ValidNumber)
+               yearlyCost.costPerMonth[i].cost < Min_ValidNumber)
         {
             cin.clear();
             cin.ignore(1000, '\n');
@@ -266,10 +319,10 @@ double MonthlyAndYearlyCost(totalYearlyCost& TYC_total)
             cout << "Invalid input. Monthly book/resource cost cannot be negative."
                  << "\nEnter again for Month " << (i + 1) << ": $";
 
-            cin >> TYC_total.costPerMonth[i].cost;
+            cin >> yearlyCost.costPerMonth[i].cost;
         }
 
-        totalYearlyBookCost += TYC_total.costPerMonth[i].cost;
+        totalYearlyBookCost += yearlyCost.costPerMonth[i].cost;
     }
 
     cout << "Total book/resource cost for the year: $"
@@ -282,8 +335,8 @@ double MonthlyAndYearlyCost(totalYearlyCost& TYC_total)
 
 
 
-// Function (return int): Calculate monthly study hours 
-int calculateMonthlyHours(int totalWeeklyHours)
+// Function (return int): Calculate monthly study hours
+int OrthodoxHistoryTracker::calculateMonthlyHours()
 {
     int weeksInMonth = 4;
     int hoursPerMonth = totalWeeklyHours * weeksInMonth;
@@ -291,8 +344,9 @@ int calculateMonthlyHours(int totalWeeklyHours)
     return hoursPerMonth;
 }
 
-// Function (return int): Calculate weekly average study hours 
-double calculateWeeklyAverageHours(int hoursPerMonth)
+
+// Function (return int): Calculate weekly average study hours
+double OrthodoxHistoryTracker::calculateWeeklyAverageHours()
 {
     int weeksInMonth = 4;
     double averageHoursPerMonth = hoursPerMonth / weeksInMonth;
@@ -301,8 +355,8 @@ double calculateWeeklyAverageHours(int hoursPerMonth)
 }
 
 
-// Function (return double): Calculate monthly average cost 
-double calculateMonthlyAverageCost(double totalYearlyBookCost)
+// Function (return double): Calculate monthly average cost
+double OrthodoxHistoryTracker::calculateMonthlyAverageCost()
 {
     int totalMonthsInYear = 12;
     double averageMonthlyCost = totalYearlyBookCost / totalMonthsInYear;
@@ -312,10 +366,11 @@ double calculateMonthlyAverageCost(double totalYearlyBookCost)
 
 
 // Function (Void): Use array to display menu choices
-void displayMenuOptions(int menuOptions[], int menuSize)
+void OrthodoxHistoryTracker::displayMenuOptions()
 {
     cout << endl;
-    cout << "Choose an option:" << endl;    
+    cout << "Choose an option:" << endl;
+
     for (int i = 0; i < menuSize; i++)
     {
         switch (menuOptions[i])
@@ -323,23 +378,25 @@ void displayMenuOptions(int menuOptions[], int menuSize)
         case 1:
             cout << "1. View study report" << endl;
             break;
+
         case 2:
             cout << "2. View spending report" << endl;
             break;
+
         case 3:
             cout << "3. View recommendation" << endl;
             break;
+
         case 4:
             cout << "Enter your choice: ";
             break;
-        }    
+        }
     }
-
 }
 
 
 // Save the formatted report to a text file
-void saveFormattedReportToFile(string favoriteTopic, string historicalFigure, double averageHoursWeekly, int hoursPerMonth, double averageMonthlyCost, double totalYearlyBookCost)
+void OrthodoxHistoryTracker::saveFormattedReportToFile()
 {
     ofstream reportFile;
     reportFile.open("report.txt");
@@ -356,7 +413,7 @@ void saveFormattedReportToFile(string favoriteTopic, string historicalFigure, do
 
     if (averageHoursWeekly >= 5)
     {
-        reportFile << left << setw(35) << "Study level:" <<  "Heavy weekly study" << endl;
+        reportFile << left << setw(35) << "Study level:" << "Heavy weekly study" << endl;
     }
     else
     {
